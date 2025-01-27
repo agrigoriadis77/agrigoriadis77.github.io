@@ -77,13 +77,12 @@
 <div class="container">
     <div class="controls">
         <input type="file" id="fileInput" accept=".xlsx,.xls">
-        <select id="classroomSelect">
+        <select id="classroomSelect" onchange="convert()">
             <option value="A1">A1</option>
             <option value="A2" selected>A2</option>
             <option value="A3">A3</option>
             <option value="A4">A4</option>
         </select>
-        <button onclick="convert()">Convert to Schedule</button>
     </div>
     <div id="schedule"></div>
 </div>

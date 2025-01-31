@@ -1,0 +1,163 @@
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+    background: linear-gradient(135deg, #f6f8ff 0%, #ffffff 100%);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.schedule-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.schedule-table th, .schedule-table td {
+    border: 2px solid #e0e0e0;
+    padding: 15px;
+    text-align: center;
+    min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+/* unset min-width for the first th and td */
+.schedule-table th:first-child, .schedule-table td:first-child {
+    min-width: unset;
+}
+
+.schedule-table th {
+    background: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%);
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-table tr:nth-child(even) {
+    background-color: #fef6ff;
+}
+
+.schedule-table tr:hover {
+    background-color: #fff0f3;
+    transform: scale(1.01);
+}
+
+.schedule-table td:hover {
+    background-color: #ffe6ea;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+input[type="file"] {
+    margin: 10px 0;
+    padding: 10px;
+    border: 2px dashed #FF9A9E;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+input[type="file"]:hover {
+    border-color: #FAD0C4;
+    background: #fff9f9;
+}
+
+button {
+    background: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+select {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 25px;
+    border: 2px solid #FF9A9E;
+    font-size: 16px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+select:hover {
+    border-color: #FAD0C4;
+    transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Add fun icons for different subjects */
+.schedule-table td {
+    position: relative;
+}
+
+.schedule-table td::before {
+    font-size: 1.2em;
+    margin-right: 5px;
+}
+
+/* Rainbow loading effect */
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.schedule-table tr:hover td {
+    background: linear-gradient(
+        90deg,
+        #ff9a9e,
+        #fad0c4,
+        #ffd1ff,
+        #c2e9fb,
+        #a1c4fd
+    );
+    background-size: 500% 500%;
+    animation: rainbow 3s ease infinite;
+    color: #333;
+} 

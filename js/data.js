@@ -1277,6 +1277,7 @@ const replacements = {
     'ΝεΛ': 'Λογοτεχνία',
     'Αγγ': 'Αγγλικά',
     'ΑρχΚμ': 'Οδύσσεια',
+    'ΑρχΚΜ': 'Οδύσσεια',
     'ΑρΚμ': 'Οδύσσεια',
     'Γεω': 'Γεωγραφία',
     'Ιστ': 'Ιστορία',
@@ -1289,4 +1290,26 @@ const replacements = {
     'Πλρ': 'Πληροφορική',
     'Τχν': 'Τεχνολογία',
     'Μσκ': 'Μουσική'
+};
+
+const backgroundImages = {
+    'Αρχαία': 'ancient.png',
+    'Μαθηματικά': 'math.png',
+    'Γαλλικά': 'french.png',
+    'Οδύσσεια': 'odyssey.png',
+    'Ιστορία': 'history.png',
+    'Εικαστικά': 'art.png',
+    'Λογοτεχνία': 'literature.png',
+    'Αγγλικά': 'english.png',
+    'Θρησκευτικά': 'religion.png',
+    'Γυμναστική': 'sports.png',
+    'Πληροφορική': 'informatics.png',
+    'Τεχνολογία': 'informatics.png',
+    'Γλώσσα': 'language.png',
+    'Μουσική': 'music.png',
+    'Γεωγραφία': 'geography.png',
+    'Φυσική': 'physics.png',
+    'Βιολογία': 'biology.png',
+    'Εργαστήριο': 'workshop.png',
+
 }; 

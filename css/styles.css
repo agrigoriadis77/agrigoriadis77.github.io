@@ -1,5 +1,6 @@
 .container {
     max-width: 1200px;
+    min-width: fit-content;
     margin: 20px auto;
     padding: 20px;
     font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
@@ -40,6 +41,7 @@
 /* unset min-width for the first th and td */
 .schedule-table th:first-child, .schedule-table td:first-child {
     min-width: unset;
+    max-width: 80px;
 }
 
 .schedule-table th {
@@ -132,8 +134,31 @@ select:hover {
 }
 
 /* Add fun icons for different subjects */
+
+/* make .schedule-table to have all the cells with the same size  */
+.schedule-table td {
+    width: 200px;
+    height: 60px;
+}
+
 .schedule-table td {
     position: relative;
+    background-color: rgba(255, 255, 255, 0.7); /* This creates the glass effect */
+}
+
+.schedule-table td.has-bg-image {
+    background-blend-mode: overlay;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Ensure text remains readable */
+.schedule-table td span {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 5px white;
+    font-size: larger;
 }
 
 .schedule-table td::before {
@@ -143,19 +168,25 @@ select:hover {
 
 /* Rainbow loading effect */
 @keyframes rainbow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .schedule-table tr:hover td {
     background: linear-gradient(
-        90deg,
-        #ff9a9e,
-        #fad0c4,
-        #ffd1ff,
-        #c2e9fb,
-        #a1c4fd
+            90deg,
+            #ff9a9e,
+            #fad0c4,
+            #ffd1ff,
+            #c2e9fb,
+            #a1c4fd
     );
     background-size: 500% 500%;
     animation: rainbow 3s ease infinite;

@@ -77,12 +77,16 @@ function convert(first = false) {
 }
 
 function processCellValue(value, prefixes) {
-    return value.split(' ')
+    const tokens = value.split(' ');
+    if (tokens.length > 2) {
+        tokens[1] = tokens.slice(1).join('');
+        tokens.length = 2;
+    }
+    return tokens
         .filter(token => !prefixes.some(prefix => token.startsWith(prefix)))
         .map(token => replacements[token] || token)
         .join(' ');
 }
-
 function displaySchedule(table) {
     const days = ['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
     let html = '<table class="schedule-table"><thead><tr><th>Ώρα</th>';
@@ -93,13 +97,29 @@ function displaySchedule(table) {
     for (let hour = 0; hour < 7; hour++) {
         html += `<tr><td>${hour + 1}η</td>`;
         for (let day = 0; day < 5; day++) {
-            html += `<td>${addEmoji(table[hour][day]).replace(/\n/g, '<br>')}</td>`;
+            const cellContent = table[hour][day];
+            const bgImage = getBackgroundImage(cellContent);
+            const bgClass = bgImage ? 'has-bg-image' : '';
+            const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
+            //const bgStyle = bgImage ? `style="background-image: url('/images/${bgImage}')"` : '';
+            html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
         }
         html += '</tr>';
     }
 
     html += '</tbody></table>';
     document.getElementById('schedule').innerHTML = html;
+}
+
+function getBackgroundImage(subject) {
+    if (!subject) return null;
+    
+    for (const [key, image] of Object.entries(backgroundImages)) {
+        if (subject.includes(key)) {
+            return image;
+        }
+    }
+    return null;
 }
 
 function addEmoji(subject) {

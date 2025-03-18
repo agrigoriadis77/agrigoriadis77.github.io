@@ -90,24 +90,52 @@ function processCellValue(value, prefixes) {
         .map(token => replacements[token] || token)
         .join(' ');
 }
+
+let isTransposed = false;
+
+function toggleTranspose() {
+    isTransposed = !isTransposed;
+    convert(false);
+}
+
 function displaySchedule(table) {
     const days = ['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
-    let html = '<table class="schedule-table"><thead><tr><th>Ώρα</th>';
-
-    days.forEach(day => html += `<th>${day}</th>`);
-    html += '</tr></thead><tbody>';
-
-    for (let hour = 0; hour < 7; hour++) {
-        html += `<tr><td>${hour + 1}η</td>`;
-        for (let day = 0; day < 5; day++) {
-            const cellContent = table[hour][day];
-            const bgImage = getBackgroundImage(cellContent);
-            const bgClass = bgImage ? 'has-bg-image' : '';
-            const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
-            //const bgStyle = bgImage ? `style="background-image: url('/images/${bgImage}')"` : '';
-            html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
+    let html = '<table class="schedule-table"><thead><tr>';
+    
+    if (isTransposed) {
+        html += '<th>Ώρα</th>';
+        for (let hour = 0; hour < 7; hour++) {
+            html += `<th>${hour + 1}η</th>`;
         }
-        html += '</tr>';
+        html += '</tr></thead><tbody>';
+        
+        for (let day = 0; day < 5; day++) {
+            html += `<tr><td>${days[day]}</td>`;
+            for (let hour = 0; hour < 7; hour++) {
+                const cellContent = table[hour][day];
+                const bgImage = getBackgroundImage(cellContent);
+                const bgClass = bgImage ? 'has-bg-image' : '';
+                const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
+                html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
+            }
+            html += '</tr>';
+        }
+    } else {
+        html += '<th>Ώρα</th>';
+        days.forEach(day => html += `<th>${day}</th>`);
+        html += '</tr></thead><tbody>';
+
+        for (let hour = 0; hour < 7; hour++) {
+            html += `<tr><td>${hour + 1}η</td>`;
+            for (let day = 0; day < 5; day++) {
+                const cellContent = table[hour][day];
+                const bgImage = getBackgroundImage(cellContent);
+                const bgClass = bgImage ? 'has-bg-image' : '';
+                const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
+                html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
+            }
+            html += '</tr>';
+        }
     }
 
     html += '</tbody></table>';

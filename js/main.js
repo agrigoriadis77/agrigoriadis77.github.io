@@ -16,6 +16,9 @@ function getOnload(selectedClass) {
 
         const maxCols = rows.reduce((max, row) => Math.max(max, row.length), 0);
 
+        // to get the new defaultData object, put a breakpoint here and get
+        // copy(rows.slice(0, rows)) and this will save it to clipboard
+
         for (let col = 0; col < maxCols; col++) {
             for (let row = 0; row < rows.length; row++) {
                 const cellValue = (rows[row][col] || '').toString().trim();

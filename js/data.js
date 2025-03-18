@@ -133,7 +133,7 @@ const defaultData = [
         null,
         null,
         null,
-        "Α1 Γμν",
+        "Α1 Γλω",
         null,
         null,
         "Α1 Γμν",
@@ -203,8 +203,8 @@ const defaultData = [
         "Γ2 Θρσ",
         "Γ4 Θρσ",
         "Γ1 Θρσ",
-        "Α1 Θρσ",
-        "Α2 Θρσ",
+        "Α1 Γμν",
+        "Α2 Ιστ",
         null,
         "Β4 Θρσ",
         null,
@@ -320,7 +320,7 @@ const defaultData = [
         "Α2 Ιστ",
         "Β2 ΑρχΓλ",
         "Β4 ΑρχΓλ",
-        "Α2 Ιστ",
+        "Α2 Θρσ",
         null,
         "Γ3 ΝεΛ",
         "Β1 ΑρχΓλ",
@@ -477,7 +477,7 @@ const defaultData = [
         null,
         null,
         null,
-        "Α1 Γλω",
+        "Α1 Μαθ",
         "Γ1 Ιστ",
         "Α1 Γλω"
     ],
@@ -527,7 +527,7 @@ const defaultData = [
         null,
         "Α2 Μαθ",
         "Β4 Μαθ",
-        "Α1 Μαθ",
+        "Α1 Θρσ",
         null,
         null,
         null,
@@ -1262,7 +1262,7 @@ const defaultData = [
         null,
         "Β3 Μαθ",
         "Γ3 Εργ"
-    ]
+    ],
 ];
 
 const replacements = {

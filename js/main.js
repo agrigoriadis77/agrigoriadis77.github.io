@@ -99,135 +99,7 @@ function toggleTranspose() {
 }
 
 function displaySchedule(table) {
-    let extra;
-    const cl = document.querySelector('#classroomSelect').value;
-    if (cl === "A1") {
-        extra = [
-            [
-                "Λογοτεχνία",
-                "Ιστορία"
-            ],
-            [
-                "Μαθηματικά",
-                "Οδύσσεια"
-            ],
-            [
-                "Τεχνολογία\nΠληροφορική",
-                "Θρησκευτικά"
-            ],
-            [
-                "Γλώσσα",
-                "Αρχαία"
-            ],
-            [
-                "Μουσική",
-                "Γαλλικά\nΓερμανικά"
-            ],
-            [
-                "Φυσική",
-                "Οικιακή Οικονομία\nΠληροφορική"
-            ],
-            [
-                "Εικαστικά",
-                "Μαθηματικά"
-            ]
-        ];
-    } else if (cl === "A2") {
-        extra = [
-            [
-                "Αρχαία",
-                "Οικιακή Οικονομία\nΠληροφορική"
-            ],
-            [
-                "Γαλλικά",
-                "Γαλλικά"
-            ],
-            [
-                "Αγγλικά",
-                "Οδύσσεια"
-            ],
-            [
-                "Εργαστήριο Δεξιοτήτων",
-                "Ιστορία"
-            ],
-            [
-                "Γλώσσα",
-                "Γεωγραφία"
-            ],
-            [
-                "Εικαστικά",
-                "Μαθηματικά"
-            ],
-            [
-                "Λογοτεχνία",
-                ""
-            ]
-        ];
-    } else if (cl === "A3") {
-        extra = [
-            [
-                "Τεχνολογία\nΠληροφορική",
-                "Λογοτεχνία"
-            ],
-            [
-                "Γλώσσα",
-                "Οικιακή Οικονομία\nΠληροφορική"
-            ],
-            [
-                "Γυμναστική",
-                "Γλώσσα"
-            ],
-            [
-                "Μαθηματικά",
-                "Αγγλικά"
-            ],
-            [
-                "Ιστορία",
-                "Οδύσσεια"
-            ],
-            [
-                "Θρησκευτικά",
-                "Μαθηματικά"
-            ],
-            [
-                "Φυσική",
-                ""
-            ]
-        ];
-    } else {
-        extra = [
-            [
-                "Γυμναστική",
-                "Γυμναστική"
-            ],
-            [
-                "Θρησκευτικά",
-                "Ιστορία"
-            ],
-            [
-                "Μαθηματικά",
-                "Οικιακή Οικονομία\nΠληροφορική"
-            ],
-            [
-                "Ιστορία",
-                "Γλώσσα"
-            ],
-            [
-                "Αγγλικά",
-                "Μαθηματικά"
-            ],
-            [
-                "Γλώσσα",
-                ""
-            ],
-            [
-                "Βιολογία",
-                ""
-            ]
-        ];
-    }
-
-    const days = ['ΔΕΥΤΕΡΑ 31/3', 'ΤΡΙΤΗ 1/4', 'ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
+    const days = ['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
     let html = '<table class="schedule-table"><thead><tr>';
     
     if (isTransposed) {
@@ -237,10 +109,10 @@ function displaySchedule(table) {
         }
         html += '</tr></thead><tbody>';
         
-    for (let day = 0; day < 7; day++) {
+        for (let day = 0; day < 5; day++) {
             html += `<tr><td>${days[day]}</td>`;
             for (let hour = 0; hour < 7; hour++) {
-            const cellContent = day < 2 ? extra[hour][day] : table[hour][day - 2];
+                const cellContent = table[hour][day];
                 const bgImage = getBackgroundImage(cellContent);
                 const bgClass = bgImage ? 'has-bg-image' : '';
                 const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
@@ -255,8 +127,8 @@ function displaySchedule(table) {
 
         for (let hour = 0; hour < 7; hour++) {
             html += `<tr><td>${hour + 1}η</td>`;
-        for (let day = 0; day < 7; day++) {
-            const cellContent = day < 2 ? extra[hour][day] : table[hour][day - 2];
+            for (let day = 0; day < 5; day++) {
+                const cellContent = table[hour][day];
                 const bgImage = getBackgroundImage(cellContent);
                 const bgClass = bgImage ? 'has-bg-image' : '';
                 const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';

@@ -22,7 +22,7 @@ function getOnload(selectedClass) {
         for (let col = 0; col < maxCols; col++) {
             for (let row = 0; row < rows.length; row++) {
                 const cellValue = (rows[row][col] || '').toString().trim();
-                
+                console.log('current day hour:', currentDay, currentHour, 'cellValue:', cellValue);
                 switch (cellValue) {
                     case 'ΔΕΥΤΕΡΑ': currentDay = 0; break;
                     case 'ΤΡΙΤΗ': currentDay = 1; break;
@@ -38,9 +38,9 @@ function getOnload(selectedClass) {
                     case '7η': currentHour = 6; break;
                     default:
                         if (currentDay !== -1 && currentHour !== -1) {
-                            const greekA = 'Α';
-                            const classPrefix = selectedClass.startsWith('A') ? 
-                                [selectedClass, greekA + selectedClass.slice(1)] : 
+                            const greekB = 'Β';
+                            const classPrefix = selectedClass.startsWith('B') ?
+                                [selectedClass, greekB + selectedClass.slice(1)] :
                                 [selectedClass];
 
                             if (classPrefix.some(prefix => cellValue.startsWith(prefix))) {
@@ -80,15 +80,18 @@ function convert(first = false) {
 }
 
 function processCellValue(value, prefixes) {
-    const tokens = value.split(' ');
+    const tokens = value.split(/[\s\n]+/);
     if (tokens.length > 2) {
         tokens[1] = tokens.slice(1).join('');
         tokens.length = 2;
     }
-    return tokens
+    console.log('Tokens:', tokens);
+    let s = tokens
         .filter(token => !prefixes.some(prefix => token.startsWith(prefix)))
         .map(token => replacements[token] || token)
         .join(' ');
+    console.log('After replacements:', s);
+    return s;
 }
 
 let isTransposed = false;

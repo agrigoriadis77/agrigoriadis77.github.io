@@ -9,12 +9,25 @@
 <body onload="convert(true)">
     <div class="container">
         <div class="controls">
+            <label for="classroomSelect">Κλάση:</label>
             <select id="classroomSelect" onchange="convert()">
+                <!-- A classes -->
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="A3">A3</option>
+                <option value="A4">A4</option>
+                <!-- B classes (default) -->
                 <option value="B1">B1</option>
                 <option value="B2" selected>B2</option>
                 <option value="B3">B3</option>
                 <option value="B4">B4</option>
+                <!-- Γ classes (Greek gamma) -->
+                <option value="Γ1">Γ1</option>
+                <option value="Γ2">Γ2</option>
+                <option value="Γ3">Γ3</option>
+                <option value="Γ4">Γ4</option>
             </select>
+            <button onclick="document.getElementById('fileInput').click()">Φόρτωση αρχείου</button>
             <button onclick="toggleTranspose()" style="font-size: x-large">&#x27F3;</button>
             <span class="last-update">Τελευταία Ανανέωση: 5 Οκτωβρίου 2025</span>
             <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">

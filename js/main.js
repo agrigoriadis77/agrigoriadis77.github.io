@@ -1,3 +1,22 @@
+function generateClassPrefixes(selectedClass) {
+    if (!selectedClass || selectedClass.length < 2) return [selectedClass];
+    const num = selectedClass.slice(1);
+    const first = selectedClass.charAt(0).toUpperCase();
+
+    if (["A", "Α"].includes(first)) {
+        // include both Latin A and Greek Alpha
+        return ["A" + num, "Α" + num];
+    } else if (["B", "Β"].includes(first)) {
+        // include both Latin B and Greek Beta
+        return ["B" + num, "Β" + num];
+    } else if (first === "Γ") {
+        // Gamma is only in Greek per requirement
+        return ["Γ" + num];
+    }
+
+    return [selectedClass];
+}
+
 function getOnload(selectedClass) {
     return function(e) {
         let rows;
@@ -38,12 +57,11 @@ function getOnload(selectedClass) {
                     case '7η': currentHour = 6; break;
                     default:
                         if (currentDay !== -1 && currentHour !== -1) {
-                            const greekB = 'Β';
-                            const classPrefix = selectedClass.startsWith('B') ?
-                                [selectedClass, greekB + selectedClass.slice(1)] :
-                                [selectedClass];
+                            // build class prefixes depending on selectedClass
+                            const classPrefix = generateClassPrefixes(selectedClass);
+                            const cellValueUpper = cellValue.toUpperCase();
 
-                            if (classPrefix.some(prefix => cellValue.startsWith(prefix))) {
+                            if (classPrefix.some(prefix => cellValueUpper.startsWith(prefix.toUpperCase()))) {
                                 const processedValue = processCellValue(cellValue, classPrefix);
                                 if (table[currentHour][currentDay]) {
                                     table[currentHour][currentDay] += '\n' + processedValue;
@@ -63,7 +81,7 @@ function getOnload(selectedClass) {
 function convert(first = false) {
     const fileInput = document.getElementById('fileInput');
     const classroomSelect = document.getElementById('classroomSelect');
-    const selectedClass = classroomSelect.value;
+    const selectedClass = classroomSelect.value.trim().toUpperCase();
     const file = fileInput.files[0];
 
     if (!file) {
@@ -87,7 +105,10 @@ function processCellValue(value, prefixes) {
     }
     console.log('Tokens:', tokens);
     let s = tokens
-        .filter(token => !prefixes.some(prefix => token.startsWith(prefix)))
+        .filter(token => {
+            const tokenUpper = token.toUpperCase();
+            return !prefixes.some(prefix => tokenUpper.startsWith(prefix.toUpperCase()));
+        })
         .map(token => replacements[token] || token)
         .join(' ');
     console.log('After replacements:', s);
@@ -177,4 +198,4 @@ function addEmoji(subject) {
         }
     }
     return subject;
-} 
+}

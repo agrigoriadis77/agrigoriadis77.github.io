@@ -16,8 +16,8 @@
     </script>
 </head>
 <body onload="convert(true)">
-    <div class="notification-banner">
-        Θέλω να λαμβάνω <a id="notifyMe">ενημέρωση</a> όταν βγαίνει πρόγραμμα!
+    <div class="notification-banner" id="notifyMe" style="width: max-content; margin: auto; cursor: pointer;">
+        Θέλω να λαμβάνω ενημέρωση όταν βγαίνει πρόγραμμα!
     </div>
     <div class="container">
         <div class="controls">
@@ -52,8 +52,12 @@
     <script src="js/main.js"></script>
     <script>
         document.getElementById('notifyMe').addEventListener('click', function(e) {
-            e.preventDefault();
-            OneSignal.showNativePrompt();
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.init({
+                    appId: "9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9",
+                });
+            });
         });
     </script>
 </body>

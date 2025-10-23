@@ -6,14 +6,6 @@
     <title>School Schedule Converter</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9",
-            });
-        });
-    </script>
 </head>
 <body onload="convert(true)">
     <div class="notification-banner" id="notifyMe" style="width: max-content; margin: auto; cursor: pointer;">
@@ -50,14 +42,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
-    <script>
+    <script>        
         document.getElementById('notifyMe').addEventListener('click', function(e) {
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-            OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.init({
-                    appId: "9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9",
-                });
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9",
             });
+        });
         });
     </script>
 </body>

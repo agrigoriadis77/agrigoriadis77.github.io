@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Schedule Converter</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1976d2">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 </head>
 <body onload="convert(true)">
-    <div class="notification-banner" id="notifyMe" style="width: max-content; margin: auto; cursor: pointer;">
+    <div class="notification-banner" id="notifyMe" style="width: max-content; margin: auto; cursor: pointer;" title="Ενεργοποίηση ειδοποιήσεων προγράμματος">
         Θέλω να λαμβάνω ενημέρωση όταν βγαίνει πρόγραμμα!
     </div>
     <div class="container">
@@ -37,19 +39,133 @@
             <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
         </div>
         <div id="schedule"></div>
+        <div id="pushDebug" style="max-width:800px;margin:1rem auto;font-size:0.85rem;color:#333;background:#f5f5f5;padding:.75rem;border-radius:4px;display:none"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
-    <script>        
-        document.getElementById('notifyMe').addEventListener('click', function(e) {
+    <script>
+        // OneSignal enhanced integration & diagnostics
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9",
+            const debugBox = document.getElementById('pushDebug');
+            function logDebug(msg, obj) {
+                console.log(msg, obj || '');
+                debugBox.style.display = 'block';
+                debugBox.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg} ${obj ? `<pre>${JSON.stringify(obj, null, 2)}</pre>` : ''}</div>`;
+            }
+            logDebug('[OneSignal] Init start');
+            try {
+                await OneSignal.init({
+                    appId: '9571bbcf-5cb6-4fe3-8848-cc2fe3231ad9',
+                    autoPrompt: false, // we'll explicitly prompt on click for reliability
+                    allowLocalhostAsSecureOrigin: true,
+                    notifyButton: { enable: false }
+                });
+                if (OneSignal.Debug && OneSignal.Debug.setLogLevel) {
+                    OneSignal.Debug.setLogLevel('trace'); // verbose internal logs to console
+                }
+                logDebug('[OneSignal] Init complete');
+            } catch (e) {
+                logDebug('[OneSignal] Init error', e);
+            }
+
+            const banner = document.getElementById('notifyMe');
+
+            async function getPermission() {
+                try {
+                    // property vs function fallback
+                    const p = OneSignal.Notifications.permission;
+                    return typeof p === 'string' ? p : (await p);
+                } catch (e) {
+                    logDebug('[OneSignal] permission read failed', e);
+                    return 'unknown';
+                }
+            }
+
+            async function updateBanner() {
+                const permission = await getPermission();
+                const supported = await OneSignal.Notifications.isPushSupported();
+                const subscribed = supported ? await OneSignal.Notifications.isPushSubscribed() : false;
+                logDebug('[OneSignal] State', { permission, supported, subscribed });
+                if (!supported) {
+                    banner.textContent = 'Το πρόγραμμα ειδοποιήσεων δεν υποστηρίζεται σε αυτόν τον browser.';
+                    banner.style.background = '#e0e0e0';
+                    return;
+                }
+                if (permission === 'denied') {
+                    banner.textContent = 'Απορρίφθηκαν ειδοποιήσεις. Ενεργοποίηση από ρυθμίσεις browser.';
+                    banner.style.background = '#ffcdd2';
+                    return;
+                }
+                if (subscribed) {
+                    banner.textContent = 'Είσαι εγγεγραμμένος. Κλικ για απεγγραφή.';
+                    banner.style.background = '#c8e6c9';
+                } else if (permission === 'default') {
+                    banner.textContent = 'Κάνε κλικ για ενεργοποίηση ειδοποιήσεων προγράμματος.';
+                    banner.style.background = '#fff9c4';
+                } else if (permission === 'granted') {
+                    banner.textContent = 'Ενεργοποιημένες ειδοποιήσεις (μη εγγεγραμμένος). Κλικ για εγγραφή.';
+                    banner.style.background = '#bbdefb';
+                } else {
+                    banner.textContent = 'Κατάσταση ειδοποιήσεων άγνωστη. Κλικ για προσπάθεια.';
+                    banner.style.background = '#ffe0b2';
+                }
+            }
+
+            async function ensureSubscribe() {
+                const supported = await OneSignal.Notifications.isPushSupported();
+                if (!supported) {
+                    logDebug('[OneSignal] Push not supported');
+                    return;
+                }
+                const permission = await getPermission();
+                if (permission === 'default') {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        logDebug('[OneSignal] Permission requested');
+                    } catch (e) {
+                        logDebug('[OneSignal] Permission request error', e);
+                    }
+                }
+                const subscribed = await OneSignal.Notifications.isPushSubscribed();
+                if (!subscribed) {
+                    try {
+                        await OneSignal.Notifications.subscribe();
+                        logDebug('[OneSignal] Subscribed');
+                    } catch (e) {
+                        logDebug('[OneSignal] Subscribe error', e);
+                    }
+                }
+            }
+
+            banner.addEventListener('click', async () => {
+                const subscribed = await OneSignal.Notifications.isPushSubscribed();
+                if (subscribed) {
+                    try {
+                        await OneSignal.Notifications.unsubscribe();
+                        logDebug('[OneSignal] Unsubscribed');
+                    } catch (e) {
+                        logDebug('[OneSignal] Unsubscribe error', e);
+                    }
+                } else {
+                    await ensureSubscribe();
+                }
+                updateBanner();
             });
-        });
+
+            // React to changes
+            if (OneSignal.Notifications && OneSignal.Notifications.addEventListener) {
+                try {
+                    OneSignal.Notifications.addEventListener('permissionChange', updateBanner);
+                    OneSignal.Notifications.addEventListener('subscriptionChange', updateBanner);
+                } catch (e) {
+                    logDebug('[OneSignal] addEventListener error', e);
+                }
+            }
+
+            updateBanner();
         });
     </script>
 </body>

@@ -199,3 +199,13 @@ function addEmoji(subject) {
     }
     return subject;
 }
+
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            convert(true);
+        } catch (err) {
+            console.error('Error initializing schedule on DOMContentLoaded:', err);
+        }
+    });
+}

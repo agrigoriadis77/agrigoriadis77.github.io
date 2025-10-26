@@ -225,19 +225,40 @@ select:hover {
 }
 
 .notification-banner {
-    background: linear-gradient(45deg, #FFD700 0%, #FFA500 100%);
-    color: #333;
+    /* Make the banner a centered pill that looks like Viber */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: max-content;
+    margin: 18px auto;
+    background: linear-gradient(135deg, #6C50B8 0%, #7E5FCC 100%); /* Viber-ish purple */
+    color: #fff;
     text-align: center;
-    padding: 15px;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    animation: blink 2s infinite;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 28px;
+    box-shadow: 0 8px 30px rgba(102, 80, 188, 0.18);
+    text-decoration: none; /* anchor default */
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    cursor: pointer;
+    animation: none; /* disable old blink */
 }
 
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.8; }
+.notification-banner::before {
+    /* simple envelope/chat icon (emoji fallback) */
+    content: '📩';
+    display: inline-block;
+    font-size: 20px;
+    transform: translateY(1px);
+}
+
+.notification-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(102, 80, 188, 0.25);
+    opacity: 0.98;
+}
+
+.notification-banner:active {
+    transform: translateY(-1px) scale(.995);
 }

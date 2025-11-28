@@ -18,7 +18,7 @@ function generateClassPrefixes(selectedClass) {
 }
 
 function getOnload(selectedClass) {
-    return function(e) {
+    return function (e) {
         let rows;
         if (e) {
             const data = new Uint8Array(e.target.result);
@@ -43,18 +43,42 @@ function getOnload(selectedClass) {
                 const cellValue = (rows[row][col] || '').toString().trim();
                 console.log('current day hour:', currentDay, currentHour, 'cellValue:', cellValue);
                 switch (cellValue) {
-                    case 'ΔΕΥΤΕΡΑ': currentDay = 0; break;
-                    case 'ΤΡΙΤΗ': currentDay = 1; break;
-                    case 'ΤΕΤΑΡΤΗ': currentDay = 2; break;
-                    case 'ΠΕΜΠΤΗ': currentDay = 3; break;
-                    case 'ΠΑΡΑΣΚΕΥΗ': currentDay = 4; break;
-                    case '1η': currentHour = 0; break;
-                    case '2η': currentHour = 1; break;
-                    case '3η': currentHour = 2; break;
-                    case '4η': currentHour = 3; break;
-                    case '5η': currentHour = 4; break;
-                    case '6η': currentHour = 5; break;
-                    case '7η': currentHour = 6; break;
+                    case 'ΔΕΥΤΕΡΑ':
+                        currentDay = 0;
+                        break;
+                    case 'ΤΡΙΤΗ':
+                        currentDay = 1;
+                        break;
+                    case 'ΤΕΤΑΡΤΗ':
+                        currentDay = 2;
+                        break;
+                    case 'ΠΕΜΠΤΗ':
+                        currentDay = 3;
+                        break;
+                    case 'ΠΑΡΑΣΚΕΥΗ':
+                        currentDay = 4;
+                        break;
+                    case '1η':
+                        currentHour = 0;
+                        break;
+                    case '2η':
+                        currentHour = 1;
+                        break;
+                    case '3η':
+                        currentHour = 2;
+                        break;
+                    case '4η':
+                        currentHour = 3;
+                        break;
+                    case '5η':
+                        currentHour = 4;
+                        break;
+                    case '6η':
+                        currentHour = 5;
+                        break;
+                    case '7η':
+                        currentHour = 6;
+                        break;
                     default:
                         if (currentDay !== -1 && currentHour !== -1) {
                             // build class prefixes depending on selectedClass
@@ -109,8 +133,15 @@ function processCellValue(value, prefixes) {
             const tokenUpper = token.toUpperCase();
             return !prefixes.some(prefix => tokenUpper.startsWith(prefix.toUpperCase()));
         })
-        .map(token => replacements[token] || token)
-        .join(' ');
+        .map(token => {
+            for (const [pattern, replacement] of Object.entries(replacements)) {
+                const re = pattern instanceof RegExp ? pattern : new RegExp(pattern, 'iu');
+                if (re.test(token)) return token.replace(re, replacement);
+            }
+            return token;
+        })
+        .join(' ')
+
     console.log('After replacements:', s);
     return s;
 }
@@ -125,14 +156,14 @@ function toggleTranspose() {
 function displaySchedule(table) {
     const days = ['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
     let html = '<table class="schedule-table"><thead><tr>';
-    
+
     if (isTransposed) {
         html += '<th>Ώρα</th>';
         for (let hour = 0; hour < 7; hour++) {
             html += `<th>${hour + 1}η</th>`;
         }
         html += '</tr></thead><tbody>';
-        
+
         for (let day = 0; day < 5; day++) {
             html += `<tr><td>${days[day]}</td>`;
             for (let hour = 0; hour < 7; hour++) {
@@ -168,7 +199,7 @@ function displaySchedule(table) {
 
 function getBackgroundImage(subject) {
     if (!subject) return null;
-    
+
     for (const [key, image] of Object.entries(backgroundImages)) {
         if (subject.includes(key)) {
             return image;

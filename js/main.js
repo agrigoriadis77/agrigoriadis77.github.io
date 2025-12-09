@@ -1,3 +1,5 @@
+let debug = false;
+
 function generateClassPrefixes(selectedClass) {
     if (!selectedClass || selectedClass.length < 2) return [selectedClass];
     const num = selectedClass.slice(1);
@@ -29,7 +31,7 @@ function getOnload(selectedClass) {
             rows = defaultData;
         }
 
-        const table = Array.from({length: 7}, () => Array(5).fill(''));
+        const table = Array.from({length: 7}, () => Array.from({length: 5}, () => []));
         let currentDay = -1;
         let currentHour = -1;
 
@@ -41,7 +43,7 @@ function getOnload(selectedClass) {
         for (let col = 0; col < maxCols; col++) {
             for (let row = 0; row < rows.length; row++) {
                 const cellValue = (rows[row][col] || '').toString().trim();
-                console.log('current day hour:', currentDay, currentHour, 'cellValue:', cellValue);
+                if (debug) console.log('current day hour:', currentDay, currentHour, 'cellValue:', cellValue);
                 switch (cellValue) {
                     case 'ΔΕΥΤΕΡΑ':
                         currentDay = 0;
@@ -82,15 +84,14 @@ function getOnload(selectedClass) {
                     default:
                         if (currentDay !== -1 && currentHour !== -1) {
                             // build class prefixes depending on selectedClass
-                            const classPrefix = generateClassPrefixes(selectedClass);
-                            const cellValueUpper = cellValue.toUpperCase();
-
-                            if (classPrefix.some(prefix => cellValueUpper.startsWith(prefix.toUpperCase()))) {
-                                const processedValue = processCellValue(cellValue, classPrefix);
-                                if (table[currentHour][currentDay]) {
-                                    table[currentHour][currentDay] += '\n' + processedValue;
-                                } else {
-                                    table[currentHour][currentDay] = processedValue;
+                            const classPrefix = generateClassPrefixes(selectedClass);  // B2 B2
+                            const cellValueUpper = cellValue.toUpperCase(); // B2 \N GL'W
+                            if (classPrefix.some(prefix => cellValueUpper.startsWith(prefix.toUpperCase()))) { // psaxnw keli poy na ksekinaei me to onoma ths takshs
+                                const processedValue = processCellValue(cellValue, classPrefix).trim();
+                                if (!table[currentHour][currentDay].includes(processedValue)) {
+                                    let element = table[currentHour][currentDay];
+                                    if (debug) element.push(cellValue);
+                                    element.push(processedValue);
                                 }
                             }
                         }
@@ -127,13 +128,13 @@ function processCellValue(value, prefixes) {
         tokens[1] = tokens.slice(1).join('');
         tokens.length = 2;
     }
-    console.log('Tokens:', tokens);
+    if (debug) console.log('Tokens:', tokens);
     let s = tokens
-        .filter(token => {
+        .filter(token => {  // remove class tokens
             const tokenUpper = token.toUpperCase();
             return !prefixes.some(prefix => tokenUpper.startsWith(prefix.toUpperCase()));
         })
-        .map(token => {
+        .map(token => {  // work on the other tokens which are lessons
             for (const [pattern, replacement] of Object.entries(replacements)) {
                 const re = pattern instanceof RegExp ? pattern : new RegExp(pattern, 'iu');
                 if (re.test(token)) return token.replace(re, replacement);
@@ -142,57 +143,29 @@ function processCellValue(value, prefixes) {
         })
         .join(' ')
 
-    console.log('After replacements:', s);
+    if (debug) console.log('After replacements:', s);
     return s;
-}
-
-let isTransposed = false;
-
-function toggleTranspose() {
-    isTransposed = !isTransposed;
-    convert(false);
 }
 
 function displaySchedule(table) {
     const days = ['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ', 'ΠΕΜΠΤΗ', 'ΠΑΡΑΣΚΕΥΗ'];
     let html = '<table class="schedule-table"><thead><tr>';
+    html += '<th>Ώρα</th>';
+    days.forEach(day => html += `<th>${day}</th>`);
+    html += '</tr></thead><tbody>';
 
-    if (isTransposed) {
-        html += '<th>Ώρα</th>';
-        for (let hour = 0; hour < 7; hour++) {
-            html += `<th>${hour + 1}η</th>`;
-        }
-        html += '</tr></thead><tbody>';
-
+    for (let hour = 0; hour < 7; hour++) {
+        html += `<tr><td>${hour + 1}η</td>`;
         for (let day = 0; day < 5; day++) {
-            html += `<tr><td>${days[day]}</td>`;
-            for (let hour = 0; hour < 7; hour++) {
-                const cellContent = table[hour][day];
-                const bgImage = getBackgroundImage(cellContent);
-                const bgClass = bgImage ? 'has-bg-image' : '';
-                const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
-                html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
-            }
-            html += '</tr>';
+            const cellContent = table[hour][day];
+            const bgImage = getBackgroundImage(cellContent);
+            const bgClass = bgImage ? 'has-bg-image' : '';
+            const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
+            const lessonList = cellContent.length > 0 ? cellContent.join('<br>') : '';
+            html += `<td class="${bgClass}" ${bgStyle}><span>${lessonList}</span></td>`;
         }
-    } else {
-        html += '<th>Ώρα</th>';
-        days.forEach(day => html += `<th>${day}</th>`);
-        html += '</tr></thead><tbody>';
-
-        for (let hour = 0; hour < 7; hour++) {
-            html += `<tr><td>${hour + 1}η</td>`;
-            for (let day = 0; day < 5; day++) {
-                const cellContent = table[hour][day];
-                const bgImage = getBackgroundImage(cellContent);
-                const bgClass = bgImage ? 'has-bg-image' : '';
-                const bgStyle = bgImage ? `style="background-image: url('css/images/${bgImage}')"` : '';
-                html += `<td class="${bgClass}" ${bgStyle}><span>${cellContent.replace(/\n/g, '<br>')}</span></td>`;
-            }
-            html += '</tr>';
-        }
+        html += '</tr>';
     }
-
     html += '</tbody></table>';
     document.getElementById('schedule').innerHTML = html;
 }
@@ -208,7 +181,7 @@ function getBackgroundImage(subject) {
     return null;
 }
 
-function addEmoji(subject) {
+/*function addEmoji(subject) {
     const emojiMap = {
         'Μαθηματικά': '🔢',
         'Γλώσσα': '📚',
@@ -229,7 +202,7 @@ function addEmoji(subject) {
         }
     }
     return subject;
-}
+}*/
 
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {

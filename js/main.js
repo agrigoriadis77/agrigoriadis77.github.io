@@ -40,6 +40,8 @@ function getOnload(selectedClass) {
         // to get the new defaultData object, put a breakpoint here and get
         // copy(rows.slice(0, rows)) and this will save it to clipboard
 
+        debugger;
+
         for (let col = 0; col < maxCols; col++) {
             for (let row = 0; row < rows.length; row++) {
                 const cellValue = (rows[row][col] || '').toString().trim();

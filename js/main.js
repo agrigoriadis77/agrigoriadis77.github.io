@@ -37,10 +37,6 @@ function getOnload(selectedClass) {
 
         const maxCols = rows.reduce((max, row) => Math.max(max, row.length), 0);
 
-        // to get the new defaultData object, put a breakpoint here and get
-        // copy(rows.slice(0, rows)) and this will save it to clipboard
-
-        debugger;
 
         for (let col = 0; col < maxCols; col++) {
             for (let row = 0; row < rows.length; row++) {
@@ -209,9 +205,33 @@ function getBackgroundImage(subject) {
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         try {
+            updateLastUpdateDate();
             convert(true);
         } catch (err) {
             console.error('Error initializing schedule on DOMContentLoaded:', err);
         }
     });
 }
+
+function updateLastUpdateDate() {
+    // defaultData[1][0] contains e.g. "Σε ισχύ: 24/2/26"
+    const raw = (defaultData?.[1]?.[0] || '').toString();
+    const match = raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    if (!match) return;
+
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1; // JS months are 0-based
+    const yearRaw = parseInt(match[3], 10);
+    const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
+
+    const date = new Date(year, month, day);
+    const formatted = date.toLocaleDateString('el-GR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    const span = document.querySelector('.last-update');
+    if (span) span.textContent = 'Σε ισχύ από: ' + formatted;
+}
+

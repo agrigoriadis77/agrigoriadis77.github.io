@@ -19,6 +19,13 @@ function generateClassPrefixes(selectedClass) {
     return [selectedClass];
 }
 
+function parseHourCell(value) {
+    if (value == null) return null;
+    const text = value.toString().trim();
+    const match = text.match(/^\s*(\d+)(?:η)?(?:\b|\s|\.|,|:|-|\/)/i);
+    return match ? Number(match[1]) : null;
+}
+
 function getOnload(selectedClass) {
     return function (e) {
         let rows;
@@ -58,28 +65,12 @@ function getOnload(selectedClass) {
                     case 'ΠΑΡΑΣΚΕΥΗ':
                         currentDay = 4;
                         break;
-                    case '1η':
-                        currentHour = 0;
-                        break;
-                    case '2η':
-                        currentHour = 1;
-                        break;
-                    case '3η':
-                        currentHour = 2;
-                        break;
-                    case '4η':
-                        currentHour = 3;
-                        break;
-                    case '5η':
-                        currentHour = 4;
-                        break;
-                    case '6η':
-                        currentHour = 5;
-                        break;
-                    case '7η':
-                        currentHour = 6;
-                        break;
-                    default:
+                    default: {
+                        const parsedHour = parseHourCell(cellValue);
+                        if (parsedHour !== null && parsedHour >= 1 && parsedHour <= 7) {
+                            currentHour = parsedHour - 1;
+                            break;
+                        }
                         if (currentDay !== -1 && currentHour !== -1) {
                             // build class prefixes depending on selectedClass
                             const classPrefix = generateClassPrefixes(selectedClass);  // B2 B2
@@ -93,6 +84,8 @@ function getOnload(selectedClass) {
                                 }
                             }
                         }
+                        break;
+                    }
                 }
             }
         }
@@ -234,4 +227,3 @@ function updateLastUpdateDate() {
     const span = document.querySelector('.last-update');
     if (span) span.textContent = 'Σε ισχύ από: ' + formatted;
 }
-

@@ -13,12 +13,16 @@ Usage (from a file, if you'd rather save one):
 
 If you run it with no arguments at all, it assumes the default class code
 Γ2 before waiting for the pasted data.
+
+Each successful run saves the class schedule and reports changes from its
+previous run. Snapshots are kept locally in .schedule_history.json.
 """
 
 import sys
 import re
 import csv
 import io
+import json
 import os
 import tempfile
 import webbrowser
@@ -28,6 +32,7 @@ DAYS = ["ΔΕΥΤΕΡΑ", "ΤΡΙΤΗ", "ΤΕΤΑΡΤΗ", "ΠΕΜΠΤΗ", "ΠΑ�
 PERIODS_PER_DAY = 7
 META_LABELS = {"α/α", "Διδάσκων", "Ονοματεπώνυμο", "ΠΕ"}
 TEACHER_LABELS = {"Διδάσκων", "Ονοματεπώνυμο"}
+HISTORY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".schedule_history.json")
 
 
 def translate_subject(abbr: str) -> str:
@@ -195,6 +200,84 @@ def build_class_schedule(entries, class_code: str):
     return schedule
 
 
+def schedule_snapshot(schedule):
+    """Convert a schedule to a JSON-serializable structure for comparison."""
+    return {
+        day: {
+            str(period): {"subject": subject, "teacher": teacher}
+            for period, (subject, teacher) in periods.items()
+        }
+        for day, periods in schedule.items()
+    }
+
+
+def print_schedule_changes(class_code: str, previous, current):
+    """Report whether this class schedule changed since the previous run."""
+    if previous is None:
+        print(f"\nΠρώτη αποθήκευση προγράμματος για το τμήμα {class_code}.")
+        return
+
+    changes = []
+    for day in DAYS:
+        previous_periods = previous.get(day, {})
+        current_periods = current.get(day, {})
+        period_numbers = sorted(
+            {int(period) for period in previous_periods}
+            | {int(period) for period in current_periods}
+        )
+        for period in period_numbers:
+            old = previous_periods.get(str(period))
+            new = current_periods.get(str(period))
+            location = f"{day}, {period}η ώρα"
+            if old == new:
+                continue
+            if old is None:
+                changes.append(f"{location}: προστέθηκε {format_lesson(new)}")
+            elif new is None:
+                changes.append(f"{location}: αφαιρέθηκε {format_lesson(old)}")
+            else:
+                changes.append(
+                    f"{location}: {format_lesson(old)} → {format_lesson(new)}"
+                )
+
+    if not changes:
+        print(f"\nΤο πρόγραμμα του {class_code} είναι ίδιο με την προηγούμενη έκδοση.")
+        return
+
+    print(f"\nΑλλαγές στο πρόγραμμα του {class_code}:")
+    for change in changes:
+        print(f"  - {change}")
+
+
+def format_lesson(lesson):
+    """Format a saved lesson for change reports."""
+    if lesson["teacher"]:
+        return f"{lesson['subject']} ({lesson['teacher']})"
+    return lesson["subject"]
+
+
+def save_schedule_snapshot(class_code: str, schedule):
+    """Compare with and atomically replace the saved schedule for this class."""
+    if os.path.exists(HISTORY_PATH):
+        with open(HISTORY_PATH, encoding="utf-8") as history_file:
+            history = json.load(history_file)
+    else:
+        history = {}
+
+    current = schedule_snapshot(schedule)
+    previous = history.get(class_code)
+    history[class_code] = current
+
+    fd, temporary_path = tempfile.mkstemp(
+        suffix=".json", prefix=".schedule_history_", dir=os.path.dirname(HISTORY_PATH)
+    )
+    with os.fdopen(fd, "w", encoding="utf-8") as history_file:
+        json.dump(history, history_file, ensure_ascii=False, indent=2)
+        history_file.write("\n")
+    os.replace(temporary_path, HISTORY_PATH)
+    print_schedule_changes(class_code, previous, current)
+
+
 def print_schedule(class_code: str, schedule):
     print(f"\nΩρολόγιο πρόγραμμα - {class_code}\n" + "=" * 40)
     for day in DAYS:
@@ -286,10 +369,10 @@ def main():
               f"Έλεγξε ότι έγραψες τον κωδικό όπως εμφανίζεται στο αρχείο.")
         return
 
+    save_schedule_snapshot(class_code, schedule)
     print_schedule(class_code, schedule)
     open_schedule_in_browser(class_code, schedule)
 
 
 if __name__ == "__main__":
     main()
-
